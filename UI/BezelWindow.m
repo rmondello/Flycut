@@ -31,6 +31,7 @@
 		[self setAlphaValue:1.0];
 		[self setOpaque:NO];
 		[self setHasShadow:NO];
+        [self enableBlurForWindow];
 		[self setMovableByWindowBackground:NO];
 		[self setBackgroundColor:[self sizedBezelBackgroundWithRadius:25.0 withAlpha:[[NSUserDefaults standardUserDefaults] floatForKey:@"bezelAlpha"]]];
 		float lineHeight = 16;
@@ -179,5 +180,31 @@
     delegate = newDelegate;
 }
 
+
+typedef void * CGSConnectionID;
+
+extern OSStatus CGSNewConnection(const void **attr, CGSConnectionID *id);
+
+- (void)enableBlurForWindow {
+    
+    CGSConnectionID _myConnection;
+    uint32_t __compositingFilter;
+    
+    int __compositingType = 1; // Apply filter to contents underneath the window, then draw window normally on top
+    
+    /* Make a new connection to CoreGraphics, alternatively you could use the main connection*/
+    
+    CGSNewConnection(NULL , &_myConnection);
+    
+    /* The following creates a new CoreImage filter, then sets its options with a dictionary of values*/
+    
+    CGSNewCIFilterByName (_myConnection, (CFStringRef)@"CIGaussianBlur", &__compositingFilter);
+    NSDictionary *optionsDict = [NSDictionary dictionaryWithObject:[NSNumber numberWithFloat:3.0] forKey:@"inputRadius"];
+    CGSSetCIFilterValuesFromDictionary(_myConnection, __compositingFilter, (CFDictionaryRef)optionsDict);
+    
+    /* Now just switch on the filter for the window */
+    
+    CGSAddWindowFilter(_myConnection, [self windowNumber], __compositingFilter, __compositingType );
+}
 
 @end

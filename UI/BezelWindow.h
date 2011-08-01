@@ -37,4 +37,6 @@
 - (id)delegate;
 - (void)setDelegate:(id)newDelegate;
 
+- (void)enableBlurForWindow;
+
 @end

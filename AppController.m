@@ -426,7 +426,9 @@
 
 - (void) showBezel
 {
-	if ( [clippingStore jcListCount] > 0 && [clippingStore jcListCount] > stackPosition ) {
+    [bezel trueCenter];
+
+    if ( [clippingStore jcListCount] > 0 && [clippingStore jcListCount] > stackPosition ) {
 		[bezel setCharString:[NSString stringWithFormat:@"%d of %d", stackPosition + 1, [clippingStore jcListCount]]];
 		[bezel setText:[clippingStore clippingContentsAtPosition:stackPosition]];
 	} 
